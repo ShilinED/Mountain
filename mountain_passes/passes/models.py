@@ -29,4 +29,4 @@ class PerevalAdded(models.Model):
 class PerevalImages(models.Model):
     pereval = models.ForeignKey(PerevalAdded, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
-    data = models.TextField()  # In real scenario, it might be a FileField
+    data = models.TextField()

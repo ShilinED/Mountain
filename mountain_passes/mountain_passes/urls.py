@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from passes.views import submit_data
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('submit_data/', submit_data, name='submit_data'),
 ]

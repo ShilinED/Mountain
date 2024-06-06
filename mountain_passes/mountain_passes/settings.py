@@ -9,27 +9,33 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+import os
 import environ
 from pathlib import Path
 
-env = environ.Env()
-environ.Env.read_env()
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Путь к корневой папке проекта
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Инициализация environ для использования переменных окружения
+env = environ.Env()
+env.read_env(BASE_DIR / '.env')
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
+# Проверка загрузки переменных окружения
+# print("BASE_DIR:", BASE_DIR)
+# print("Current Directory:", Path.cwd())
+# print(".env file location:", BASE_DIR / '.env')
+# print("DB_NAME:", env('DB_NAME', default=None))
+# print("DB_USER:", env('DB_USER', default=None))
+# print("DB_PASSWORD:", env('DB_PASSWORD', default=None))
+# print("DB_HOST:", env('DB_HOST', default=None))
+# print("DB_PORT:", env('DB_PORT', default=None))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#hzhsg&8(w=9)6*jaut-@0t)9!y+ss0g_h5+qxmg#)6b0n5muu'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+# Определение базовых настроек
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-#hzhsg&8(w=9)6*jaut-@0t)9!y+ss0g_h5+qxmg#)6b0n5muu')
+DEBUG = env.bool('DEBUG', default=True)
 ALLOWED_HOSTS = []
 
+# Настройка базы данных
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -42,7 +48,6 @@ DATABASES = {
 }
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -50,6 +55,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',  # Добавляем drf_yasg для документации Swagger
+    'passes',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +71,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'mountain_passes.urls'
 
+# Определение шаблонов
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -82,21 +90,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mountain_passes.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
+# Валидация паролей
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -112,25 +106,42 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
+# Интернационализация
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
+USE_L10N = True
+
 USE_TZ = True
 
+# Статические файлы (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
-STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
+# Настройка автоматического поля первичного ключа
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Настройки для медиа-файлов
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Настройки REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer'
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Настройки для drf-yasg (Swagger)
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Mountain Passes API',
+    'DESCRIPTION': 'API documentation for managing information about mountain passes.',
+    'VERSION': '1.0.0',
+    'CONTACT': {
+        'email': 'admin@example.com',
+    },
+}

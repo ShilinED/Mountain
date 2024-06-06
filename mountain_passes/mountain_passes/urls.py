@@ -15,9 +15,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from passes.views import submit_data
+from django.urls import path, include
+from passes.views import submit_data, get_pereval, edit_pereval, get_user_perevals
+from passes import swagger
 
 urlpatterns = [
-    path('submit_data/', submit_data, name='submit_data'),
+    path('admin/', admin.site.urls),
+    path('api/', include([
+        path('submit_data/', submit_data, name='submit_data'),
+        path('submitData/<int:id>/', get_pereval, name='get_pereval'),
+        path('submitData/<int:id>/edit/', edit_pereval, name='edit_pereval'),
+        path('submitData/', get_user_perevals, name='get_user_perevals'),
+    ])),
+    # Добавляем путь к Swagger API
+    path('', include('passes.swagger')),
 ]
